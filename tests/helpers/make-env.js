@@ -5,7 +5,7 @@ export default function makeEnv(options) {
 
   return Ember.merge({
     Ember: Ember,
-    getDebugFunction: assertModule.getDebugFunction,
-    setDebugFunction: assertModule.setDebugFunction
+    getDebugHandler: assertModule.getDebugHandler,
+    setDebugHandler: assertModule.setDebugHandler
   }, options);
 }

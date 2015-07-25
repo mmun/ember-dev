@@ -22,7 +22,7 @@ DeprecationAssert.prototype = {
       this._previousEmberDeprecate = this.env.getDebugFunction('deprecate');
     }
 
-    this.env.setDebugFunction('deprecate', (msg, test) => {
+    this.env.setDebugHandler('deprecate', (msg, test) => {
       var resultOfTest = typeof test === 'function' ? test() : test;
       var shouldDeprecate = !resultOfTest;
 
@@ -170,7 +170,7 @@ DeprecationAssert.prototype = {
 
   restore() {
     if (this._previousEmberDeprecate) {
-      this.env.setDebugFunction('deprecate', this._previousEmberDeprecate);
+      this.env.setDebugHandler('deprecate', this._previousEmberDeprecate);
       this._previousEmberDeprecate = null;
     }
     window.expectNoDeprecation = null;

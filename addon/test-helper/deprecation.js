@@ -12,28 +12,28 @@ var DeprecationAssert = function(env){
 
 DeprecationAssert.prototype = {
 
-  reset: function(){
+  reset() {
     this.expecteds = null;
     this.actuals = null;
   },
 
-  stubEmber: function(){
-    if (!this._previousEmberDeprecate && this._previousEmberDeprecate !== this.env.Ember.deprecate) {
-      this._previousEmberDeprecate = this.env.Ember.deprecate;
+  stubEmber() {
+    if (!this._previousEmberDeprecate) {
+      this._previousEmberDeprecate = this.env.getDebugFunction('deprecate');
     }
-    var assertion = this;
-    this.env.Ember.deprecate = function(msg, test) {
+
+    this.env.setDebugFunction('deprecate', (msg, test) => {
       var resultOfTest = typeof test === 'function' ? test() : test;
       var shouldDeprecate = !resultOfTest;
 
-      assertion.actuals = assertion.actuals || [];
+      this.actuals = this.actuals || [];
       if (shouldDeprecate) {
-        assertion.actuals.push([msg, resultOfTest]);
+        this.actuals.push([msg, resultOfTest]);
       }
-    };
+    });
   },
 
-  inject: function(){
+  inject() {
     var assertion = this;
 
     // Expects no deprecation to happen from the time of calling until
@@ -110,7 +110,7 @@ DeprecationAssert.prototype = {
   // assertDeprecation is called after each test run to catch any expectations
   // without explicit asserts.
   //
-  assert: function(){
+  assert() {
     var expecteds = this.expecteds || [],
         actuals   = this.actuals || [];
     var o, i;
@@ -168,9 +168,9 @@ DeprecationAssert.prototype = {
     }
   },
 
-  restore: function(){
+  restore() {
     if (this._previousEmberDeprecate) {
-      this.env.Ember.deprecate = this._previousEmberDeprecate;
+      this.env.setDebugFunction('deprecate', this._previousEmberDeprecate);
       this._previousEmberDeprecate = null;
     }
     window.expectNoDeprecation = null;
